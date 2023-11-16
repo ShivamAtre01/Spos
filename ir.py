@@ -1,18 +1,14 @@
-import RPi.GPIO as GPIO
-import time
+import RPi.GPIO as GPIO # ir sensor
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(3,GPIO.IN)
+GPIO.setup(5,GPIO.out)
 
-GPIO.setmode(GPIO.BCM)
+while True :
+        var=GPIO.input(3)
+        print(var)
 
-GPIO.setup(21,GPIO.IN)
-GPIO.setup(2,GPIO.OUT)
-
-while True:
-    a=GPIO.input(21)
-    if (a==1):
-        print("IR sensor Detected")
-        GPIO.output(2,True)
-        time.sleep(0.2)
-    else:
-        print("Not Detected")
-        GPIO.output(2,False)
-        
+        if(var==0):
+            GPIO.output(5,True)
+        else:
+            GPIO.output(5,False)
+GPIO.cleanup()
