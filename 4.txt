@@ -1,0 +1,84 @@
+-- Create tables with suitable constraints
+
+CREATE TABLE Cust_Master (
+    Cust_no INT PRIMARY KEY,
+    Cust_name VARCHAR(50) NOT NULL,
+    Cust_addr VARCHAR(100)
+);
+
+CREATE TABLE Order (
+    Order_no INT PRIMARY KEY,
+    Cust_no INT,
+    Order_date DATE,
+    Qty_Ordered INT,
+    FOREIGN KEY (Cust_no) REFERENCES Cust_Master(Cust_no)
+);
+
+CREATE TABLE Product (
+    Product_no INT PRIMARY KEY,
+    Product_name VARCHAR(50),
+    Order_no INT,
+    FOREIGN KEY (Order_no) REFERENCES Order(Order_no)
+);
+
+-- Insert records
+
+-- Insert records into Cust_Master table
+INSERT INTO Cust_Master VALUES (1001, 'John Doe', 'Address1');
+INSERT INTO Cust_Master VALUES (1002, 'Alice Smith', 'Address2');
+INSERT INTO Cust_Master VALUES (1003, 'Bob Johnson', 'Address3');
+-- Add more records as needed
+
+-- Insert records into Order table
+INSERT INTO Order VALUES (1, 1001, '2023-01-01', 5);
+INSERT INTO Order VALUES (2, 1002, '2023-02-15', 10);
+INSERT INTO Order VALUES (3, 1003, '2023-03-20', 8);
+-- Add more records as needed
+
+-- Insert records into Product table
+INSERT INTO Product VALUES (101, 'Product1', 1);
+INSERT INTO Product VALUES (102, 'Product2', 2);
+INSERT INTO Product VALUES (103, 'Product3', 3);
+-- Add more records as needed
+
+-- Queries
+
+-- 1. List names of customers having 'A' as the second letter in their name.
+SELECT Cust_name
+FROM Cust_Master
+WHERE SUBSTRING(Cust_name, 2, 1) = 'A';
+
+-- 2. Display orders from Customer no C1002, C1005, C1007, and C1008.
+SELECT *
+FROM Order
+WHERE Cust_no IN (1002, 1005, 1007, 1008);
+
+-- 3. List clients who stay in either 'Bangalore' or 'Mangalore'.
+SELECT *
+FROM Cust_Master
+WHERE Cust_addr IN ('Bangalore', 'Mangalore');
+
+-- 4. Display names of customers and the product_name they have purchased.
+SELECT Cust_Master.Cust_name, Product.Product_name
+FROM Cust_Master
+JOIN Order ON Cust_Master.Cust_no = Order.Cust_no
+JOIN Product ON Order.Order_no = Product.Order_no;
+
+-- 5. Create a view View1 consisting of Cust_name, Product_name.
+CREATE VIEW View1 AS
+SELECT Cust_Master.Cust_name, Product.Product_name
+FROM Cust_Master
+JOIN Order ON Cust_Master.Cust_no = Order.Cust_no
+JOIN Product ON Order.Order_no = Product.Order_no;
+
+-- 6. Display product_name and quantity purchased by each customer.
+SELECT Cust_Master.Cust_name, Product.Product_name, Order.Qty_Ordered
+FROM Cust_Master
+JOIN Order ON Cust_Master.Cust_no = Order.Cust_no
+JOIN Product ON Order.Order_no = Product.Order_no;
+
+-- 7. Perform different join operations (e.g., INNER JOIN, LEFT JOIN, RIGHT JOIN) based on your specific needs.
+-- Example: Display all customers and their orders using INNER JOIN
+SELECT Cust_Master.Cust_name, Order.*
+FROM Cust_Master
+INNER JOIN Order ON Cust_Master.Cust_no = Order.Cust_no;

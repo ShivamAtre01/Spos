@@ -1,0 +1,106 @@
+// Insert at least 5 documents in the collection
+db.Employee.insertMany([
+  {
+    Emp_id: 1,
+    Name: { FName: "John", LName: "Doe" },
+    Company_Name: "ABC Corp",
+    Salary: 50000,
+    Designation: "Programmer",
+    Age: 30,
+    Expertise: ["MongoDB", "Java", "Node.js"],
+    DOB: "1990-01-01",
+    Email_id: "john.doe@example.com",
+    Contact: "123-456-7890",
+    Address: [
+      { PAddr: "Street1", LAddr: "City1" },
+      { PAddr: "Street2", LAddr: "City2" },
+    ],
+  },
+  // Add more documents as needed
+]);
+
+// 1. Using aggregation Return Designation with Total Salary is Above 200000.
+db.Employee.aggregate([
+  {
+    $group: {
+      _id: "$Designation",
+      totalSalary: { $sum: "$Salary" },
+    },
+  },
+  {
+    $match: {
+      totalSalary: { $gt: 200000 },
+    },
+  },
+]);
+
+// 2. Using Aggregate method returns names and _id in upper case and in alphabetical order.
+db.Employee.aggregate([
+  {
+    $project: {
+      _id: 0,
+      upperName: {
+        $toUpper: {
+          $concat: ["$Name.FName", " ", "$Name.LName"],
+        },
+      },
+    },
+  },
+  {
+    $sort: {
+      upperName: 1,
+    },
+  },
+]);
+
+// 3. Using aggregation method find Employee with Total Salary for Each City with Designation="DBA".
+db.Employee.aggregate([
+  {
+    $match: {
+      Designation: "DBA",
+    },
+  },
+  {
+    $group: {
+      _id: "$Address.LAddr",
+      totalSalary: { $sum: "$Salary" },
+    },
+  },
+]);
+
+// 4. Create Single Field Indexes on Designation field of employee collection
+db.Employee.createIndex({ Designation: 1 });
+
+// 5. To Create Multikey Indexes on Expertise field of employee collection.
+db.Employee.createIndex({ Expertise: 1 });
+
+// 6. Create an Index on Emp_id field, compare the time required to search Emp_id before and after creating an index. (Hint Add at least 10000 Documents)
+// Insert 10000 documents with Emp_id
+for (let i = 1; i <= 10000; i++) {
+  db.Employee.insert({
+    Emp_id: i,
+    // other fields...
+  });
+}
+
+// Search Emp_id without index (before creating an index)
+const startTimeWithoutIndex = new Date();
+db.Employee.find({ Emp_id: 5000 });
+const endTimeWithoutIndex = new Date();
+const timeWithoutIndex = endTimeWithoutIndex - startTimeWithoutIndex;
+
+// Create an index on Emp_id field
+db.Employee.createIndex({ Emp_id: 1 });
+
+// Search Emp_id with index (after creating an index)
+const startTimeWithIndex = new Date();
+db.Employee.find({ Emp_id: 5000 });
+const endTimeWithIndex = new Date();
+const timeWithIndex = endTimeWithIndex - startTimeWithIndex;
+
+// Compare the time
+print("Time without index:", timeWithoutIndex, "milliseconds");
+print("Time with index:", timeWithIndex, "milliseconds");
+
+// 7. Return a List of Indexes on created on employee Collection.
+db.Employee.getIndexes();

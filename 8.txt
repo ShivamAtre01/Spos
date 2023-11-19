@@ -1,0 +1,74 @@
+-- Create tables with appropriate constraints
+
+CREATE TABLE Companies (
+    comp_id INT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    cost DECIMAL(10, 2),
+    year INT
+);
+
+CREATE TABLE Orders (
+    comp_id INT,
+    domain VARCHAR(50),
+    quantity INT,
+    FOREIGN KEY (comp_id) REFERENCES Companies(comp_id)
+);
+
+-- Insert records into Companies table
+INSERT INTO Companies VALUES (1, 'Company1', 10000.00, 2000);
+INSERT INTO Companies VALUES (2, 'Company2', 15000.50, 2010);
+INSERT INTO Companies VALUES (3, 'Company3', 12000.75, 2005);
+
+-- Insert records into Orders table
+INSERT INTO Orders VALUES (1, 'Domain1', 100);
+INSERT INTO Orders VALUES (2, 'Domain2', 200);
+INSERT INTO Orders VALUES (3, 'Domain3', 150);
+
+-- Queries
+
+-- 1. Find names, costs, domains, and quantities for companies using INNER JOIN.
+SELECT C.name, C.cost, O.domain, O.quantity
+FROM Companies C
+INNER JOIN Orders O ON C.comp_id = O.comp_id;
+
+-- 2. Find names, costs, domains, and quantities for companies using LEFT OUTER JOIN.
+SELECT C.name, C.cost, O.domain, O.quantity
+FROM Companies C
+LEFT OUTER JOIN Orders O ON C.comp_id = O.comp_id;
+
+-- 3. Find names, costs, domains, and quantities for companies using RIGHT OUTER JOIN.
+SELECT C.name, C.cost, O.domain, O.quantity
+FROM Companies C
+RIGHT OUTER JOIN Orders O ON C.comp_id = O.comp_id;
+
+-- 4. Find names, costs, domains, and quantities for companies using UNION operator.
+SELECT name, cost, NULL AS domain, NULL AS quantity FROM Companies
+UNION
+SELECT NULL AS name, NULL AS cost, domain, quantity FROM Orders;
+
+-- 5. Create View View1 by selecting both tables to show company name and quantities.
+CREATE VIEW View1 AS
+SELECT C.name AS company_name, O.quantity
+FROM Companies C
+JOIN Orders O ON C.comp_id = O.comp_id;
+
+-- 6. Create View View2 by selecting any two columns and perform insert, update, delete operations.
+CREATE VIEW View2 AS
+SELECT comp_id, name
+FROM Companies;
+
+-- Perform insert operation on View2
+INSERT INTO View2 VALUES (4, 'Company4');
+
+-- Perform update operation on View2
+UPDATE View2
+SET name = 'UpdatedCompany4'
+WHERE comp_id = 4;
+
+-- Perform delete operation on View2
+DELETE FROM View2
+WHERE comp_id = 4;
+
+-- 7. Display content of View1 and View2.
+SELECT * FROM View1;
+SELECT * FROM View2;
